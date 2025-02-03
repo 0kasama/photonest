@@ -1,12 +1,12 @@
-const { images, users } = require("../models");
-const crypto = require("crypto");
+const { images, users } = require('../models');
+const crypto = require('crypto');
 
 const generateSlug = async () => {
   let slug;
   let isUnique = false;
 
   while (!isUnique) {
-    slug = crypto.randomBytes(20).toString("hex");
+    slug = crypto.randomBytes(20).toString('hex');
     const existingImage = await images.findOne({ where: { slug } });
     if (!existingImage) {
       isUnique = true;
@@ -16,15 +16,16 @@ const generateSlug = async () => {
 };
 
 const findAll = async () => {
-  const image = await images.findAll();
-
+  const image = await images.findAll({
+    order: [['createdAt', 'DESC']],
+  });
   return image;
 };
 
 const findOne = async (params) => {
   const isNumeric = (string) => /^[+-]?\d+(\.\d+)?$/.test(string);
   const filterOption = {
-    where: {}
+    where: {},
   };
 
   if (isNumeric(params.id) === false) {
@@ -36,8 +37,8 @@ const findOne = async (params) => {
   filterOption.include = [
     {
       model: users,
-      attributes: ["name"],
-    }
+      attributes: ['name'],
+    },
   ];
 
   const image = await images.findOne(filterOption);
@@ -45,11 +46,10 @@ const findOne = async (params) => {
   return image;
 };
 
-
 const create = async (file, params) => {
   if (!file) {
     throw {
-      name: "MissingFile",
+      name: 'MissingFile',
     };
   }
 
@@ -81,7 +81,7 @@ const update = async (params) => {
 
   if (!image) {
     throw {
-      name: "ErrorNotFound",
+      name: 'ErrorNotFound',
     };
   }
 
@@ -102,7 +102,7 @@ const destroy = async (params) => {
 
   if (!image) {
     throw {
-      name: "ErrorNotFound",
+      name: 'ErrorNotFound',
     };
   }
 
